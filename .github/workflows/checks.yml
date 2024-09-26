@@ -15,7 +15,26 @@ jobs:
           password: ${{ secrets.DOCKERHUB_SECRET }}
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Start containers
+        run: docker compose up -d
+      - name: Wait for database
+        run: |
+          max_retries=30
+          counter=0
+          until docker compose exec -T db pg_isready -U postgres || [ $counter -eq $max_retries ]
+          do
+            sleep 1
+            ((counter++))
+            echo "Waiting for database... (Attempt $counter/$max_retries)"
+          done
+          if [ $counter -eq $max_retries ]; then
+            echo "Database failed to start in time"
+            exit 1
+          fi
       - name: Lint
         run: docker compose run --rm app sh -c "flake8"
       - name: Test
         run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py migrate && python manage.py test"
+      - name: Stop containers
+        if: always()
+        run: docker compose down
