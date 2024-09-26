@@ -23,21 +23,6 @@ jobs:
         run: docker ps -a
       - name: Check database logs
         run: docker compose logs db
-      - name: Wait for database
-        run: |
-          max_retries=60
-          counter=0
-          until docker compose exec -T db pg_isready -h localhost -p 5432 -U postgres || [ $counter -eq $max_retries ]
-          do
-            sleep 2
-            ((counter++))
-            echo "Waiting for database... (Attempt $counter/$max_retries)"
-            docker compose logs db
-          done
-          if [ $counter -eq $max_retries ]; then
-            echo "Database failed to start in time"
-            exit 1
-          fi
       - name: Lint
         run: docker compose run --rm app sh -c "flake8"
       - name: Test
