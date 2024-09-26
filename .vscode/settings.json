@@ -1,0 +1,26 @@
+{
+    "docker.commands.attach": "${containerCommand} exec -it ${containerId} ${shellCommand}",
+    "docker.commands.run": "${containerCommand} run --rm -d ${exposedPorts} ${tag}",
+    "docker.commands.composeUpSubset": [
+        {
+            "label": "Compose Up",
+            "template": "${composeCommand} ${profileList} ${configurationFile} up ${detached} ${build} ${serviceList}"
+        }
+    ],
+    "docker.commands.runInteractive": "${containerCommand} run --rm -it ${exposedPorts} ${tag}",
+    "docker.commands.build": "${containerCommand} build --pull --rm -f \"${dockerfile}\" -t ${tag} \"${context}\"",
+    "docker.commands.composeDown": [
+
+        {
+            "label": "Compose Down",
+            "template": "${composeCommand} ${configurationFile} down"
+        }
+    ],
+    "docker.commands.composeUp": [
+        {
+            "label": "Compose Up",
+            "template": "${composeCommand} ${configurationFile} up ${detached} ${build}"
+        }
+    ],
+    "docker.commands.logs": "${containerCommand} logs --tail 1000 -f ${containerId}"
+}
